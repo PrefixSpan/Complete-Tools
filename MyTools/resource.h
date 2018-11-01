@@ -15,6 +15,9 @@
 #define IDC_EDIT_WND3                   1005
 #define IDC_BTN_START4                  1006
 #define IDC_EDIT_WND4                   1007
+#define IDC_BTN_START5                  1009
+#define IDC_EDIT_WND5                   1010
+#define IDC_BTN_START6                  1011
 
 // Next default values for new objects
 // 
