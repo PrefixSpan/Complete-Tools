@@ -14,6 +14,7 @@
 const int _get_foucus_wnd = 111;
 const int _record_point = 112;
 const int _watch_color_change = 113;
+const int _watch_size_change = 114;
 // CAboutDlg dialog used for App About
 
 HHOOK g_MouseHook = NULL;
@@ -77,6 +78,7 @@ CMyToolsDlg::CMyToolsDlg(CWnd* pParent /*=NULL*/)
   , tick_first_point_color_change_(0)
   , tick_second_point_color_change_(0)
   , is_begin_watch_color_(FALSE)
+  , is_begin_watch_size_(FALSE)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -95,6 +97,7 @@ BEGIN_MESSAGE_MAP(CMyToolsDlg, CDialog)
   ON_BN_CLICKED(IDC_BTN_START2, &CMyToolsDlg::OnBnClickedStartEnumAllWnd)
   ON_BN_CLICKED(IDC_BTN_START3, &CMyToolsDlg::OnBnClickedStartEnumAllPeocess)
   ON_BN_CLICKED(IDC_BTN_START4, &CMyToolsDlg::OnBnClickedWatchColorChange)
+  ON_BN_CLICKED(IDC_BTN_START5, &CMyToolsDlg::OnBnClickedWatchSizeChange)
   //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -202,10 +205,6 @@ void CMyToolsDlg::OnTimer(UINT_PTR nIDEvent)
     case _watch_color_change:
       {
         HDC hDC = ::GetDC(NULL);
-//         COLORREF colorref1 = ::GetPixel(hDC, point_first_record_.x, point_first_record_.y);//Get the cursor color
-//         if (colorref1 != color_first_record_) {
-//           tick_first_point_color_change_ = GetTickCount();
-//         }
 
         COLORREF colorref2 = ::GetPixel(hDC, point_second_record_.x, point_second_record_.y);//Get the cursor color
         ::ReleaseDC(NULL, hDC);
@@ -215,6 +214,20 @@ void CMyToolsDlg::OnTimer(UINT_PTR nIDEvent)
           CString string_msg;
           string_msg.Format(_T("Cast time : %d"), (tick_second_point_color_change_ - g_nMsgTickCount));
           KillTimer(_watch_color_change);
+          AfxMessageBox(string_msg);
+        }
+
+        break;
+      }
+    case _watch_size_change:
+      {
+        RECT rect;
+        ::GetClientRect(hwnd_watch_, &rect);
+        if (rect_right_ != rect.right) {
+          DWORD tick_size_change_ = GetTickCount();
+          CString string_msg;
+          string_msg.Format(_T("Cast time : %d"), (tick_size_change_ - g_nMsgTickCount));
+          KillTimer(_watch_size_change);
           AfxMessageBox(string_msg);
         }
 
@@ -300,6 +313,27 @@ void CMyToolsDlg::OnBnClickedWatchColorChange()
     if (btn) btn->SetWindowText(_T("Stop"));
     is_begin_watch_color_ = TRUE;
     SetTimer(_record_point, 3000, 0);
+  }
+}
+
+void CMyToolsDlg::OnBnClickedWatchSizeChange()
+{
+  if (is_begin_watch_size_) {
+    CButton* btn = (CButton*)GetDlgItem(IDC_BTN_START5);
+    if (btn) btn->SetWindowText(_T("Start"));
+    KillTimer(_watch_size_change);
+    is_begin_watch_size_ = FALSE;
+  } else {
+    CButton* btn = (CButton*)GetDlgItem(IDC_BTN_START5);
+    if (btn) btn->SetWindowText(_T("Stop"));
+
+    hwnd_watch_ = ::FindWindow(NULL, _T("Zoom Meeting ID: 392-978-108 "));
+    RECT rect;
+    ::GetClientRect(hwnd_watch_, &rect);
+    rect_right_ = rect.right;
+
+    SetTimer(_watch_size_change, 30, 0);
+    is_begin_watch_size_ = TRUE;
   }
 }
 

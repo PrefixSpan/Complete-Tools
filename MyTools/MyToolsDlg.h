@@ -31,6 +31,9 @@ private:
   DWORD tick_first_point_color_change_;
   DWORD tick_second_point_color_change_;
 
+  BOOL is_begin_watch_size_;
+  UINT rect_right_;
+  HWND hwnd_watch_;
 // Implementation
 protected:
 	HICON m_hIcon;
@@ -50,4 +53,5 @@ protected:
   afx_msg void OnBnClickedStartEnumAllWnd();
   afx_msg void OnBnClickedStartEnumAllPeocess();
   afx_msg void OnBnClickedWatchColorChange();
+  afx_msg void OnBnClickedWatchSizeChange();
 };
